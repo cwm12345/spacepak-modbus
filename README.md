@@ -145,9 +145,11 @@ Maintenance manual (ILHP2-0423), Modbus section. Addresses, scales and the
 enum and bit tables follow it. On live units:
 
 - 1011, 1158 and 1159 have been read and written.
-- The `status`, `measurements` and `faults` registers have been read.
-- The setpoint limits (1162-1165) and the operating mode's enum values (1012)
-  come from the manual and have not yet been checked against a live unit.
+- Every register this library reads has been read from two units and checked
+  against the values an existing integration reported for the same units.
+- The operating mode (1012) and the setpoint limits (1162-1165) read as
+  expected. The limits are whatever the installer configured, so they differ
+  from the manual's defaults.
 
 ## License
 

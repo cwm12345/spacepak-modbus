@@ -21,8 +21,10 @@ from modbus_connection.cli_helper import (
 from spacepak_modbus import READINGS, SETTINGS, IlahpHeatPump
 
 # A gateway answering Modbus TCP, or the unit's RS-485 line directly or
-# through a serial server (socket://host:port).
-CONNECTIONS = (("tcp", None), ("serial", "rtu"))
+# through a serial server (socket://host:port). Both framers are named on
+# purpose: offered a single framer, cli_helper defaults every transport to it,
+# and a TCP gateway spoken to in RTU framing just times out.
+CONNECTIONS = (("tcp", "socket"), ("serial", "rtu"))
 
 EXAMPLES = """examples:
   uv run script/query.py 192.168.1.50 --port 502 --unit 1
