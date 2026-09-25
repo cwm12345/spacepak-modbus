@@ -32,10 +32,15 @@ register this library reads is a holding register.
 
 | Component | Registers | What |
 | :--- | :--- | :--- |
-| `controls` | 1011-1012, 1158-1165 | Power, operating mode, heating and cooling targets, the unit's own setpoint limits |
+| `controls` | 1011-1012, 1028, 1158-1165 | Power, operating mode, whether the hot water function is enabled, heating and cooling targets, the unit's own setpoint limits |
 | `status` | 2011-2032 | Running, current mode (defrost included), load outputs, compressor hours |
-| `measurements` | 2042-2077 | Water, air, coil and refrigerant temperatures, currents, voltages, compressor frequency, water flow |
+| `measurements` | 2042-2072 | Water, air, coil and refrigerant temperatures, currents, voltages, compressor frequency |
 | `faults` | 2081-2090 | The nine failure registers, decoded into named faults |
+
+The manual lists room temperature (T09, 2058) and water flow (T39, 2077) as not
+used on this unit, so they are left out. The hot water tank temperature (T08)
+only has a sensor behind it when the unit's hot water function is enabled
+(`controls.hot_water_enabled`).
 
 The installer parameters (registers 1013-1270: compressor frequency curves, EEV
 steps, defrost timing, weather compensation, timers) are deliberately left out.

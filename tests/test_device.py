@@ -37,6 +37,7 @@ async def test_update_decodes_every_component(heat_pump: IlahpHeatPump) -> None:
     controls = heat_pump.controls
     assert controls.power_on is True
     assert controls.operating_mode is OperatingMode.HEATING
+    assert controls.hot_water_enabled is False
     assert controls.heating_target_temperature == 45.0
     assert controls.cooling_target_temperature == 7.0
     assert (controls.min_heating_setpoint, controls.max_heating_setpoint) == (
@@ -63,11 +64,9 @@ async def test_update_decodes_every_component(heat_pump: IlahpHeatPump) -> None:
     assert m.outlet_temperature == 43.2
     assert m.discharge_temperature == 71.5
     assert m.ac_input_current == 14.2
-    assert m.room_temperature == 21.0
     assert m.ac_input_voltage == 238
     assert m.compressor_frequency_target == 62
     assert m.compressor_frequency == 60
-    assert m.water_flow == 3.25
 
 
 async def test_temperatures_below_zero_are_signed(heat_pump: IlahpHeatPump) -> None:
@@ -116,10 +115,10 @@ async def test_a_full_poll_costs_five_reads(
     await heat_pump.async_update()
     blocks = [(event.address, event.count) for event in unit.read_events]
     assert sorted(blocks) == [
-        (1011, 2),
+        (1011, 18),
         (1158, 8),
         (2011, 22),
-        (2042, 36),
+        (2042, 31),
         (2081, 10),
     ]
     assert all(event.register_type == "holding" for event in unit.read_events)
