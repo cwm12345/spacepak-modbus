@@ -15,6 +15,7 @@ from spacepak_modbus import (
     READINGS,
     SETTINGS,
     IlahpHeatPump,
+    OpenInputs,
     OperatingMode,
     Outputs,
     UnitMode,
@@ -56,6 +57,11 @@ async def test_update_decodes_every_component(heat_pump: IlahpHeatPump) -> None:
     assert status.compressor_on is True
     assert status.alarm_on is False
     assert status.compressor_hours == 40000
+    assert status.open_inputs == OpenInputs(0)
+    assert status.remote_on_off_closed is True
+    assert status.heat_cool_on_off_closed is True
+    assert status.heat_selected is True
+    assert status.flow_switch_closed is True
 
     m = heat_pump.measurements
     assert m.compressor_current == 10.5
@@ -117,7 +123,7 @@ async def test_a_full_poll_costs_five_reads(
     assert sorted(blocks) == [
         (1011, 18),
         (1158, 8),
-        (2011, 22),
+        (2011, 24),
         (2042, 31),
         (2081, 10),
     ]
@@ -193,3 +199,26 @@ async def test_raw_snapshot_replays(mock_modbus_unit: MockModbusUnit) -> None:
     await heat_pump.measurements.async_update()
     assert heat_pump.measurements.outlet_temperature == 50.0
     assert heat_pump.measurements.ambient_temperature == -2.0
+
+
+async def test_field_inputs_idle_and_cooling(
+    unit: MockModbusUnit, heat_pump: IlahpHeatPump
+) -> None:
+    """0x0014 is the idle word seen live: flow and remote on/off open."""
+    unit.holding[2034] = 0x0014
+    await heat_pump.async_update_readings()
+    status = heat_pump.status
+    assert status.open_inputs == OpenInputs.WATER_FLOW | OpenInputs.REMOTE_ON_OFF
+    assert status.remote_on_off_closed is False
+    assert status.flow_switch_closed is False
+    assert status.heat_cool_on_off_closed is True
+    assert status.heat_selected is True
+
+    unit.holding[2034] = 0x0020  # running in cooling
+    await heat_pump.async_update_readings()
+    assert status.heat_selected is False
+    assert status.remote_on_off_closed is True
+
+
+def test_field_inputs_unknown_before_a_read(heat_pump: IlahpHeatPump) -> None:
+    assert heat_pump.status.remote_on_off_closed is None
