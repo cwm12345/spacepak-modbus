@@ -26,7 +26,9 @@ its installation manual (ILHP2-0423). It has been exercised against two units
 behind a Modbus TCP gateway. Other SpacePak models are untested.
 
 The unit speaks Modbus RTU at 9600 baud, 8N1, on its RS-485 port. Every
-register this library reads is a holding register.
+register this library touches is a holding register (as opposed to an input
+register), whether it reads it or writes it. See Writing below for what it
+can change.
 
 ## What it covers
 
