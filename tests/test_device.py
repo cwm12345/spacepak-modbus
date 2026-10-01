@@ -18,6 +18,7 @@ from spacepak_modbus import (
     OpenInputs,
     OperatingMode,
     Outputs,
+    PumpMode,
     UnitMode,
 )
 
@@ -50,8 +51,29 @@ async def test_update_decodes_every_component(heat_pump: IlahpHeatPump) -> None:
         28.0,
     )
 
+    assert controls.cooling_enabled is True
+    assert controls.field_wired_control is True
+    assert controls.silence_mode is False
+
+    t = heat_pump.tuning
+    assert t.shutdown_ambient_temperature == -30.0
+    assert (t.heating_restart_difference, t.heating_stop_difference) == (2.0, 2.0)
+    assert (t.cooling_restart_difference, t.cooling_stop_difference) == (2.0, 2.0)
+    assert t.low_ambient_compensation_start == -17.8
+    assert t.low_ambient_compensation_end == -23.3
+    assert t.low_ambient_heating_target == 40.6
+    assert t.heating_restart_ambient_temperature == 10.0
+    assert t.pump_mode is PumpMode.ECONOMIC
+    assert (t.pump_interval, t.pump_run_time) == (30, 3)
+    assert (t.compressor_min_frequency, t.compressor_max_frequency) == (30, 90)
+    assert t.weather_compensation_slope == 1.0
+    assert t.weather_compensation_offset == 20.0
+    assert t.weather_compensation_enabled is False
+
     status = heat_pump.status
     assert status.running is True
+    assert status.limited_target_temperature == 45.0
+    assert status.compensated_heating_target_temperature == 45.0
     assert status.unit_mode is UnitMode.HEATING
     assert status.outputs == Outputs.COMPRESSOR | Outputs.WATER_PUMP
     assert status.compressor_on is True
@@ -115,14 +137,18 @@ async def test_readings_and_settings_poll_apart(heat_pump: IlahpHeatPump) -> Non
     assert heat_pump.controls.power_on is True
 
 
-async def test_a_full_poll_costs_five_reads(
+async def test_a_full_poll_costs_nine_reads(
     unit: MockModbusUnit, heat_pump: IlahpHeatPump
 ) -> None:
     await heat_pump.async_update()
     blocks = [(event.address, event.count) for event in unit.read_events]
     assert sorted(blocks) == [
-        (1011, 18),
+        (1011, 20),
+        (1037, 1),
         (1158, 8),
+        (1160, 16),
+        (1192, 8),
+        (1219, 18),
         (2011, 24),
         (2042, 31),
         (2081, 10),

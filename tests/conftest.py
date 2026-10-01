@@ -13,16 +13,39 @@ HOLDING: dict[int, int] = {
     # -- controls --
     1011: 1,  # on
     1012: 1,  # operating mode: heating
+    1021: 1,  # H05 cooling enabled
+    1023: 1,  # H07 field-wired control
     1028: 0,  # H28 hot water function off
+    1030: 0,  # H22 silence mode off
     1158: 450,  # heating target 45.0 C
     1159: 70,  # cooling target 7.0 C
     1162: 80,  # min cooling setpoint 8.0 C
     1163: 280,  # max cooling setpoint 28.0 C
     1164: 150,  # min heating setpoint 15.0 C
     1165: 500,  # max heating setpoint 50.0 C
+    # -- tuning --
+    1037: 0xFED4,  # A03 shutdown ambient -30.0 C
+    1160: 20,  # R04 heating restart difference 2.0 K
+    1161: 20,  # R05 heating stop difference 2.0 K
+    1167: 0xFF4E,  # R29 low-ambient compensation start -17.8 C
+    1168: 0xFF17,  # R30 low-ambient compensation end -23.3 C
+    1169: 406,  # R31 low-ambient heating target 40.6 C
+    1174: 20,  # R06 cooling restart difference 2.0 K
+    1175: 20,  # R07 cooling stop difference 2.0 K
+    1192: 100,  # R39 heating restart ambient 10.0 C
+    1197: 1,  # P01 pump mode economic
+    1198: 30,  # P02 interval 30 min
+    1199: 3,  # P03 run time 3 min
+    1219: 30,  # C02 compressor min 30 Hz
+    1220: 90,  # C03 compressor max 90 Hz
+    1234: 10,  # weather compensation slope 1.0
+    1235: 200,  # weather compensation offset 20.0 C
+    1236: 0,  # weather compensation off
     # -- status --
     2011: 1,  # running
     2012: 1,  # heating
+    2013: 450,  # target after limits 45.0 C
+    2014: 450,  # target after weather compensation 45.0 C
     2019: 0x0011,  # compressor + water pump
     2032: 40000,  # compressor hours, above the int16 range
     2034: 0x0000,  # every field input closed: enabled, heating, flow made

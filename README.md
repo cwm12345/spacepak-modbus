@@ -34,8 +34,9 @@ can change.
 
 | Component | Registers | What |
 | :--- | :--- | :--- |
-| `controls` | 1011-1012, 1028, 1158-1165 | Power, operating mode, whether the hot water function is enabled, heating and cooling targets, the unit's own setpoint limits |
-| `status` | 2011-2032 | Running, current mode (defrost included), load outputs, compressor hours |
+| `controls` | 1011-1012, 1021, 1023, 1028, 1030, 1158-1165 | Power, operating mode, cooling enabled (H05), field-wired control (H07), hot water function enabled, silence mode, heating and cooling targets, the unit's own setpoint limits |
+| `tuning` | 1037, 1160-1161, 1167-1169, 1174-1175, 1192, 1197-1199, 1219-1220, 1234-1236 | Read-only installer parameters: restart and stop differentials, low-ambient compensation, shutdown and restart outdoor temperatures, pump mode, compressor frequency limits, weather compensation |
+| `status` | 2011-2034 | Running, current mode (defrost included), the effective water targets after limits and weather compensation, load outputs, compressor hours, field switch inputs |
 | `measurements` | 2042-2072 | Water, air, coil and refrigerant temperatures, currents, voltages, compressor frequency |
 | `faults` | 2081-2090 | The nine failure registers, decoded into named faults |
 
@@ -44,10 +45,9 @@ used on this unit, so they are left out. The hot water tank temperature (T08)
 only has a sensor behind it when the unit's hot water function is enabled
 (`controls.hot_water_enabled`).
 
-The installer parameters (registers 1013-1270: compressor frequency curves, EEV
-steps, defrost timing, weather compensation, timers) are deliberately left out.
-Writing those by mistake would misconfigure the heat pump, not just misreport
-it.
+`tuning` is read-only. The rest of the installer parameters (EEV steps, defrost
+timing, fan setup, sterilize, timers) are left out. Writing installer parameters
+by mistake would misconfigure the heat pump, not just misreport it.
 
 Every temperature is stored in tenths of a degree Celsius, whatever the unit's
 display is set to show, so every temperature here is in °C.
@@ -84,8 +84,8 @@ asyncio.run(main())
 
 - `async_update_readings()` reads `status`, `measurements` and `faults`: what the
   unit measures and reports.
-- `async_update_settings()` reads `controls`: registers that change when
-  something writes them. Run one after a write to read back what took effect.
+- `async_update_settings()` reads `controls` and `tuning`: registers that change
+  when something writes them. Run one after a write to read back what took effect.
 - `async_update()` does both, in one report.
 
 Each returns an `UpdateReport`. A component whose block the unit refuses keeps
