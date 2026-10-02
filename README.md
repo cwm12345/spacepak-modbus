@@ -34,8 +34,8 @@ can change.
 
 | Component | Registers | What |
 | :--- | :--- | :--- |
-| `controls` | 1011-1012, 1021, 1023, 1028, 1030, 1158-1165 | Power, operating mode, cooling enabled (H05), field-wired control (H07), hot water function enabled, silence mode, heating and cooling targets, the unit's own setpoint limits |
-| `tuning` | 1037, 1160-1161, 1167-1169, 1174-1175, 1192, 1197-1199, 1219-1220, 1234-1236 | Read-only installer parameters: restart and stop differentials, low-ambient compensation, shutdown and restart outdoor temperatures, pump mode, compressor frequency limits, weather compensation |
+| `controls` | 1011-1012, 1018, 1021, 1023-1024, 1028-1030, 1158-1165 | Power, operating mode, auto restart (H01), cooling enabled (H05), field-wired control (H07), Modbus address (H10), hot water function enabled, display unit (H21), silence mode, heating and cooling targets, the unit's own setpoint limits |
+| `tuning` | 1037-1039, 1053, 1160-1161, 1166-1169, 1174-1175, 1192-1193, 1197-1199, 1219-1220, 1228-1230, 1234-1236 | Read-only installer parameters: antifreeze protection, restart and stop differentials, outlet overheat margin, low-ambient compensation, freeze-protection pump run, maximum water temperatures, shutdown and restart outdoor temperatures, pump mode, compressor frequency limits, weather compensation |
 | `status` | 2011-2034 | Running, current mode (defrost included), the effective water targets after limits and weather compensation, load outputs, compressor hours, field switch inputs |
 | `measurements` | 2042-2072 | Water, air, coil and refrigerant temperatures, currents, voltages, compressor frequency |
 | `faults` | 2081-2090 | The nine failure registers, decoded into named faults |

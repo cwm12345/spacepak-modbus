@@ -54,6 +54,9 @@ async def test_update_decodes_every_component(heat_pump: IlahpHeatPump) -> None:
     assert controls.cooling_enabled is True
     assert controls.field_wired_control is True
     assert controls.silence_mode is False
+    assert controls.auto_restart is True
+    assert controls.unit_address == 1
+    assert controls.display_fahrenheit is True
 
     t = heat_pump.tuning
     assert t.shutdown_ambient_temperature == -30.0
@@ -69,6 +72,13 @@ async def test_update_decodes_every_component(heat_pump: IlahpHeatPump) -> None:
     assert t.weather_compensation_slope == 1.0
     assert t.weather_compensation_offset == 20.0
     assert t.weather_compensation_enabled is False
+    assert (t.antifreeze_temperature, t.antifreeze_difference) == (2.2, 2.8)
+    assert t.antifreeze_min_temperature == 1.1
+    assert t.outlet_overheat_difference == 2.0
+    assert t.pump_freeze_protection_ambient == 1.1
+    assert t.max_water_temperature == 54.5
+    assert t.max_water_temperature_low_ambient == 43.3
+    assert t.max_water_temperature_high_ambient == 43.3
 
     status = heat_pump.status
     assert status.running is True
@@ -144,7 +154,7 @@ async def test_a_full_poll_costs_nine_reads(
     blocks = [(event.address, event.count) for event in unit.read_events]
     assert sorted(blocks) == [
         (1011, 20),
-        (1037, 1),
+        (1037, 17),
         (1158, 8),
         (1160, 16),
         (1192, 8),
