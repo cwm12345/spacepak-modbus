@@ -226,6 +226,17 @@ async def test_heating_differences_write(
     assert unit.holding[1160] == 50
 
 
+async def test_pump_interval_write(
+    unit: MockModbusUnit, heat_pump: IlahpHeatPump
+) -> None:
+    await heat_pump.tuning.write("pump_interval", 60.0)
+    assert unit.holding[1198] == 60
+    for bad in (0, 121, 45.5):
+        with pytest.raises(ValueError):
+            await heat_pump.tuning.write("pump_interval", bad)
+    assert unit.holding[1198] == 60
+
+
 async def test_other_tuning_stays_read_only(heat_pump: IlahpHeatPump) -> None:
     with pytest.raises(AttributeError):
         await heat_pump.tuning.write("cooling_restart_difference", 5.0)
