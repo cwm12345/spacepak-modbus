@@ -52,6 +52,16 @@ by mistake would misconfigure the heat pump, not just misreport it.
 Every temperature is stored in tenths of a degree Celsius, whatever the unit's
 display is set to show, so every temperature here is in °C.
 
+## Installation
+
+```
+pip install spacepak-modbus
+```
+
+For Home Assistant, you don't need this directly: use the
+[ha-spacepak-ilahp](https://github.com/cwm12345/ha-spacepak-ilahp)
+integration, which includes a copy.
+
 ## Usage
 
 ```python
