@@ -214,6 +214,23 @@ async def test_setpoint_out_of_range_writes_nothing(
     assert unit.holding[1158] == 450
 
 
+async def test_min_heating_setpoint_write(
+    unit: MockModbusUnit, heat_pump: IlahpHeatPump
+) -> None:
+    await heat_pump.controls.write("min_heating_setpoint", 15.5)
+    assert unit.holding[1164] == 155
+    with pytest.raises(ValueError):
+        await heat_pump.controls.write("min_heating_setpoint", 100.0)
+    assert unit.holding[1164] == 155
+
+
+async def test_max_heating_setpoint_stays_read_only(
+    heat_pump: IlahpHeatPump,
+) -> None:
+    with pytest.raises(AttributeError):
+        await heat_pump.controls.write("max_heating_setpoint", 50.0)
+
+
 async def test_heating_differences_write(
     unit: MockModbusUnit, heat_pump: IlahpHeatPump
 ) -> None:
